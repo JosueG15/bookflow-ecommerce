@@ -23,7 +23,15 @@ function loadDataTable() {
                 },
                 "width": "25%"
             }
-        ]
+        ],
+        "language": {
+            "info": "Mostrando pagina _PAGE_ de _PAGES_",
+            "infoEmpty": "No hay informacion disponible",
+            "infoFiltered": "(filtrado de _MAX> registros disponibles)",
+            "lengthMenu": "Mostrando _MENU_ registros por pagina",
+            "zeroRecords": "Sin registros disponibles",
+            "search": "Buscar"
+        }
     });
 }
 

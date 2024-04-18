@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ProyectoFinal.Models
 {
@@ -21,5 +23,11 @@ namespace ProyectoFinal.Models
 
         [DisplayName("Codigo Postal")]
         public string? PostalCode { get; set; }
+
+        public int? CompanyId { get; set;}
+
+        [ForeignKey("CompanyId")]
+        [ValidateNever]
+        public Company Company { get; set; }
     }
 }

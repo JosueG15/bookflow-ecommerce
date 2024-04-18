@@ -3,12 +3,14 @@
 #nullable disable
 
 using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using ProyectoFinal.Models;
 
 namespace ProyectoFinalPWA.Areas.Identity.Pages.Account.Manage
 {
@@ -56,8 +58,29 @@ namespace ProyectoFinalPWA.Areas.Identity.Pages.Account.Manage
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Phone]
-            [Display(Name = "Phone number")]
+            [Display(Name = "Numero de telefono")]
             public string PhoneNumber { get; set; }
+
+            [Required(ErrorMessage = "Este campo es requerido")]
+            [EmailAddress]
+            [Display(Name = "Email")]
+            public string Email { get; set; }
+
+            [Required(ErrorMessage = "Este campo es obligatorio")]
+            [DisplayName("Nombre")]
+            public string? Name { get; set; }
+
+            [DisplayName("Direccion")]
+            public string? StreetAddress { get; set; }
+
+            [DisplayName("Municipio")]
+            public string? City { get; set; }
+
+            [DisplayName("Departamento")]
+            public string? State { get; set; }
+
+            [DisplayName("Codigo Postal")]
+            public string? PostalCode { get; set; }
         }
 
         private async Task LoadAsync(IdentityUser user)
@@ -88,9 +111,10 @@ namespace ProyectoFinalPWA.Areas.Identity.Pages.Account.Manage
         public async Task<IActionResult> OnPostAsync()
         {
             var user = await _userManager.GetUserAsync(User);
+
             if (user == null)
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                return NotFound($"Usuario no encontrado '{_userManager.GetUserId(User)}'.");
             }
 
             if (!ModelState.IsValid)
@@ -100,18 +124,24 @@ namespace ProyectoFinalPWA.Areas.Identity.Pages.Account.Manage
             }
 
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+            //user.Name = Input.Name;
+            //user.StreetAddress = Input.StreetAddress;
+            //user.City = Input.City;
+            //user.State = Input.State;
+            //user.PostalCode = Input.PostalCode;
+
             if (Input.PhoneNumber != phoneNumber)
             {
                 var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
                 if (!setPhoneResult.Succeeded)
                 {
-                    StatusMessage = "Unexpected error when trying to set phone number.";
+                    StatusMessage = "Error inesperado al guardar numero de telefono.";
                     return RedirectToPage();
                 }
             }
 
             await _signInManager.RefreshSignInAsync(user);
-            StatusMessage = "Your profile has been updated";
+            StatusMessage = "Perfil Actualizado";
             return RedirectToPage();
         }
     }

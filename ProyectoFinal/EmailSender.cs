@@ -1,17 +1,28 @@
 ﻿using Microsoft.AspNetCore.Identity.UI.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 
 namespace ProyectoFinal.Utility
 {
     public class EmailSender : IEmailSender
     {
+
+        public string SendGridSecret { get; set; }
+
+        public EmailSender(IConfiguration config)
+        {
+            SendGridSecret = config.GetValue<string>("SendGrid:SecretKey");
+        }
         public Task SendEmailAsync(string email, string subject, string htmlMessage)
         {
-            return Task.CompletedTask;
+            var client = new SendGridClient(SendGridSecret);
+
+            var from = new EmailAddress("josue14guardado@gmail.com", "Proyecto Final");
+            var to = new EmailAddress(email);
+            var message = MailHelper.CreateSingleEmail(from, to, subject, "", htmlMessage);
+
+            return client.SendEmailAsync(message);
         }
     }
 }

@@ -17,6 +17,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using System.ComponentModel;
+using ProyectoFinal.Models;
+using ProyectoFinal.Utility;
 
 namespace ProyectoFinalPWA.Areas.Identity.Pages.Account
 {
@@ -84,6 +87,25 @@ namespace ProyectoFinalPWA.Areas.Identity.Pages.Account
             [Required]
             [EmailAddress]
             public string Email { get; set; }
+
+            [Required(ErrorMessage = "Este campo es obligatorio")]
+            [DisplayName("Nombre")]
+            public string? Name { get; set; }
+
+            [DisplayName("Direccion")]
+            public string? StreetAddress { get; set; }
+
+            [DisplayName("Municipio")]
+            public string? City { get; set; }
+
+            [DisplayName("Departamento")]
+            public string? State { get; set; }
+
+            [DisplayName("Codigo Postal")]
+            public string? PostalCode { get; set; }
+
+            [DisplayName("Numero de telefono")]
+            public string? PhoneNumber { get; set; }
         }
         
         public IActionResult OnGet() => RedirectToPage("./Login");
@@ -131,7 +153,8 @@ namespace ProyectoFinalPWA.Areas.Identity.Pages.Account
                 {
                     Input = new InputModel
                     {
-                        Email = info.Principal.FindFirstValue(ClaimTypes.Email)
+                        Email = info.Principal.FindFirstValue(ClaimTypes.Email),
+                        Name = info.Principal.FindFirstValue(ClaimTypes.Name)
                     };
                 }
                 return Page();
@@ -155,10 +178,18 @@ namespace ProyectoFinalPWA.Areas.Identity.Pages.Account
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+                user.StreetAddress = Input.StreetAddress;
+                user.City = Input.City;
+                user.State = Input.State;
+                user.PostalCode = Input.PostalCode;
+                user.Name = Input.Name;
+                user.PhoneNumber = Input.PhoneNumber;
+
 
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
+                    await _userManager.AddToRoleAsync(user, SD.Role_Customer);
                     result = await _userManager.AddLoginAsync(user, info);
                     if (result.Succeeded)
                     {
@@ -197,11 +228,11 @@ namespace ProyectoFinalPWA.Areas.Identity.Pages.Account
             return Page();
         }
 
-        private IdentityUser CreateUser()
+        private ApplicationUser CreateUser()
         {
             try
             {
-                return Activator.CreateInstance<IdentityUser>();
+                return Activator.CreateInstance<ApplicationUser>();
             }
             catch
             {

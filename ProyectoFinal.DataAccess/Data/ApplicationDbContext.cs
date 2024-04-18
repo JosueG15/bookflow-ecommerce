@@ -15,6 +15,11 @@ namespace ProyectoFinal.DataAccess.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+        public DbSet<ShoppingCart> ShoppingCarts { get; set; }
+        public DbSet<Company> Companies { get; set; }
+
+        public DbSet<OrderHeader> OrderHeaders { get; set; }
+        public DbSet<OrderDetail> OrderDetails { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -25,6 +30,39 @@ namespace ProyectoFinal.DataAccess.Data
                 new Category { Id = 2, Name = "SciFi", DisplayOrder = 2 },
                 new Category { Id = 3, Name = "Historia", DisplayOrder = 3 }
                 );
+
+            modelBuilder.Entity<Company>().HasData(
+                new Company
+                {
+                    Id = 1,
+                    Name = "Libros El Progreso",
+                    StreetAddress = "Calle al paraiso, edificio rojo numero 24",
+                    City = "Santa Tecla",
+                    State = "La Libertad",
+                    PhoneNumber = "7788-3344",
+                    PostalCode = "CP 1106"
+                },
+                new Company
+                {
+                    Id = 2,
+                    Name = "Libros El Retroceso",
+                    StreetAddress = "Calle al paraiso, edificio azul numero 25",
+                    City = "Santa Tecla",
+                    State = "La Libertad",
+                    PhoneNumber = "7777-4444",
+                    PostalCode = "CP 1107"
+                },
+                 new Company
+                 {
+                     Id = 3,
+                     Name = "Libros El Lento",
+                     StreetAddress = "Calle al paraiso, edificio morado numero 26",
+                     City = "Santa Tecla",
+                     State = "La Libertad",
+                     PhoneNumber = "8888-3333",
+                     PostalCode = "CP 1108"
+                 }
+               ); ;
 
             modelBuilder.Entity<Product>().HasData(
                 new Product
