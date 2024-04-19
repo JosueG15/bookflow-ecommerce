@@ -1,15 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using ProyectoFinal.DataAccess.Repository.IRepository;
 using ProyectoFinal.Models;
-using ProyectoFinal.Models.ViewModels;
 using ProyectoFinal.Utility;
 
 namespace ProyectoFinalPWA.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = SD.Role_User_Admin)]
+    [Authorize(Roles = $"{SD.Role_User_Admin},{SD.Role_User_Employee}")]
     public class CompanyController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;

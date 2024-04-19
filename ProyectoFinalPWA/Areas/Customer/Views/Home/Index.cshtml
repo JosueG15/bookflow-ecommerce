@@ -1,45 +1,158 @@
-﻿@model IEnumerable<Product> 
+﻿@using System.Linq
+@model IEnumerable<Product>
 
-<div class="row pb-3">
-    @foreach(var product in Model)
-    {
-        <div class="col-lg-3 col-sm-6">
-            <div class="row p-2">
-                <div class="col-12 p-1">
-                    <div class="card border-0 p-3 shadow border-top border-5 rounded">
-                        @if(product.ProductImages != null && product.ProductImages.Count() > 0)
-                        {
-                            <img src="@product.ProductImages.FirstOrDefault().ImageURL" class="card-img-top rounded" />
-                        } else
-                        {
-                            <img src="https://placehold.co/500x600/png" class="card-img-top rounded" />
-                        }
+@{
+    var uniqueCategories = Model
+        .Select(p => p.Category)
+        .GroupBy(c => c.Name)
+        .Select(g => g.First())
+        .ToList();
 
-                        <div class="card-body pb-0">
-                            <div class="pl-1">
-                                <p class="card-title h5 text-dark opacity-75 text-uppercase text-center text-truncate">@product.Title</p>
-                                <p class="card-title text-warning text-center">escrito por <b>@product.Author</b></p>
-                            </div>
+    var uniqueAuthors = Model
+       .Select(p => p.Author) 
+       .Distinct()
+       .ToList();
+}
 
-                            <div class="pl-1">
-                                <p class="text-dark text-opacity-75 text-center mb-0">
-                                    Precio por unidad: <span class="text-decoration-line-through">@product.ListPrice.ToString("c")</span> 
-                                </p>
-                            </div>
 
-                            <div class="pl-1">
-                                <p class="text-dark text-opacity-75 text-center">Mayoreo: <span>@product.Price100.ToString("c")</span> </p>
-                            </div>
+<div class="container d-flex flex-column flex-md-row justify-content-between gap-3">
+    <div class="filter-catalog col-12 col-md-2">
+        <div class="filter">
+            <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#mobile-filter" aria-expanded="false" aria-controls="mobile-filter">Filtros<span class="fa fa-filter pl-1"></span></button>
+        </div>
+
+        <div id="filter-catalog">
+            <div>
+                <h6 class="p-1 border-bottom">Global</h6>
+                <ul class="filter-list">
+                    <li class="custom-link-style"><a href="#" class="filter-category" data-category="">Todos</a></li>
+                </ul>
+            </div>
+            <div>
+                <h6 class="p-1 border-bottom">Categoria</h6>
+                <ul class="filter-list">
+                    @foreach (var category in uniqueCategories)
+                    {
+                        <li class="custom-link-style"><a href="#" class="filter-category @(Context.Request.Query["category"].Equals(category.Name) ? "active-element-text" : "")" data-category="@category.Name">@category.Name</a></li>
+                    }
+                </ul>
+            </div>
+            <div>
+                <h6 class="p-1 border-bottom">Rango de precios</h6>
+                <ul class="list-group">
+                    <li class="list-group-item list-group-item-action mb-2 rounded custom-link-style @(Context.Request.Query["priceRange"].Equals("0-50") ? "active-element" : "")"><a href="#" class="filter-price" data-price="0-50">$1.00 - $50.00</a></li>
+                    <li class="list-group-item list-group-item-action mb-2 rounded custom-link-style @(Context.Request.Query["priceRange"].Equals("50-100") ? "active-element" : "")"><a href="#" class="filter-price" data-price="50-100">$50.00 - $100.00</a></li>
+                    <li class="list-group-item list-group-item-action mb-2 rounded custom-link-style @(Context.Request.Query["priceRange"].Equals("100-150") ? "active-element" : "")"><a href="#" class="filter-price" data-price="100-150">$100.00 - $150.00</a></li>
+                </ul>
+            </div>
+            <div>
+                <h6>Autor</h6>
+                <form class="ml-md-2" id="author-filter-form">
+                    @foreach (var author in uniqueAuthors)
+                    {
+                        <div class="form-inline border rounded p-sm-2 my-2">
+                            <input type="radio" name="author" id="@author" value="@author"
+                            @(Context.Request.Query["author"].Equals(author) ? "checked='checked'" : "")>
+                            <label for="@author" class="pl-1 pt-sm-0 pt-1">@author</label>
                         </div>
+                    }
+                </form>
 
-                        <div>
-                            <a asp-area="Customer" asp-controller="Home" asp-action="Details" asp-route-productId="@product.Id" class="btn btn-primary bg-gradient border-0 form-control">
-                                Detalles
-                            </a>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="row pb-3 col-12 col-md-10">
+        @foreach (var product in Model)
+        {
+            <div class="col-lg-3 col-sm-6">
+                <div class="row p-2">
+                    <div class="col-12 p-1">
+                        <div class="card border-0 p-3 shadow border-top border-5 rounded">
+                            @if (product.ProductImages != null && product.ProductImages.Count() > 0)
+                            {
+                                <img src="@product.ProductImages.FirstOrDefault().ImageURL" class="card-img-top rounded" />
+                            }
+                            else
+                            {
+                                <img src="https://placehold.co/500x600/png" class="card-img-top rounded" />
+                            }
+
+                            <div class="card-body pb-0">
+                                <div class="pl-1">
+                                    <p class="card-title h5 text-dark opacity-75 text-uppercase text-center text-truncate" title="@product.Title">@product.Title</p>
+                                    <p class="card-title text-warning text-center text-truncate" title="@product.Author">escrito por <b>@product.Author</b></p>
+                                </div>
+
+                                <div class="pl-1">
+                                    <p class="text-dark text-opacity-75 text-center mb-0">
+                                        Precio por unidad: <span class="text-decoration-line-through">@product.ListPrice.ToString("c")</span>
+                                    </p>
+                                </div>
+
+                                <div class="pl-1">
+                                    <p class="text-dark text-opacity-75 text-center">Mayoreo: <span>@product.Price100.ToString("c")</span> </p>
+                                </div>
+                            </div>
+
+                            <div>
+                                <a asp-area="Customer" asp-controller="Home" asp-action="Details" asp-route-productId="@product.Id" class="btn btn-primary bg-gradient border-0 form-control">
+                                    Detalles
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    }
+        }
+    </div>
 </div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/filter.css">
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const updateFilters = () => {
+                const params = new URLSearchParams(window.location.search);
+                const category = params.get('category');
+                const priceRange = params.get('priceRange');
+                const author = params.get('author');
+
+                document.querySelectorAll('.filter-category').forEach(function (link) {
+                    link.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        if (this.getAttribute('data-category') === "") {
+                            window.location.search = '';
+                        } else {
+                            params.set('category', this.getAttribute('data-category'));
+                            window.location.search = params.toString();
+                        }
+                    });
+                });
+
+                document.querySelectorAll('.filter-price').forEach(function (link) {
+                    link.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        params.set('priceRange', this.getAttribute('data-price'));
+                        window.location.search = params.toString();
+                    });
+                });
+
+                document.getElementById('author-filter-form').onchange = function () {
+                    const selectedAuthor = document.querySelector('input[name="author"]:checked').value;
+                    params.set('author', selectedAuthor);
+                    window.location.search = params.toString();
+                };
+
+            };
+
+            updateFilters();
+        });
+    </script>
+
+}

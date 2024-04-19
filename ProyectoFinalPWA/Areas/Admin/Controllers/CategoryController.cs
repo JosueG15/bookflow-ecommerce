@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ProyectoFinal.DataAccess.Data;
 using ProyectoFinal.DataAccess.Repository.IRepository;
 using ProyectoFinal.Models;
 using ProyectoFinal.Utility;
@@ -8,7 +7,7 @@ using ProyectoFinal.Utility;
 namespace ProyectoFinalPWA.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = SD.Role_User_Admin)]
+    [Authorize(Roles = $"{SD.Role_User_Admin},{SD.Role_User_Employee}")]
     public class CategoryController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -25,92 +24,68 @@ namespace ProyectoFinalPWA.Areas.Admin.Controllers
             return View(objCategoryList);
         }
 
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult Create(Category category)
-        {
-            if (category.Name == category.DisplayOrder.ToString())
-            {
-                ModelState.AddModelError("Name", "El orden no puede ser el mismo que el nombre.");
-            }
-
-            if (ModelState.IsValid)
-            {
-                _unitOfWork.Category.Add(category);
-                _unitOfWork.Save();
-                TempData["success"] = "Categoria creada exitosamente.";
-                return RedirectToAction("Index");
-            }
-
-            return View();
-        }
-
-        public IActionResult Edit(int? id)
+        public IActionResult Upsert(int? id)
         {
             if (id == null || id == 0)
             {
-                return NotFound();
+                return View(new Category());
+
             }
-
-            Category? categoryFromDb = _unitOfWork.Category.GetFirstOrDefault(cat => cat.Id == id);
-
-            if (categoryFromDb == null)
+            else
             {
-                return NotFound();
+                Category category = _unitOfWork.Category.GetFirstOrDefault(com => com.Id == id);
+                return View(category);
             }
-
-            return View(categoryFromDb);
         }
 
         [HttpPost]
-        public IActionResult Edit(Category category)
+        public IActionResult Upsert(Category category)
         {
             if (ModelState.IsValid)
             {
-                _unitOfWork.Category.Update(category);
+                if (category.Id == 0)
+                {
+                    _unitOfWork.Category.Add(category);
+                }
+                else
+                {
+                    _unitOfWork.Category.Update(category);
+                }
                 _unitOfWork.Save();
-                TempData["success"] = "Categoria actualizada exitosamente.";
+                TempData["success"] = "Operacion realizad con exito";
                 return RedirectToAction("Index");
             }
-
-            return View();
+            else
+            {
+                return View(category);
+            }
         }
 
+        #region API CALLS
+
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            List<Category> objCategoryList = _unitOfWork.Category.GetAll().ToList();
+            return Json(new { data = objCategoryList });
+        }
+
+        [HttpDelete]
         public IActionResult Delete(int? id)
         {
-            if (id == null || id == 0)
+            var CategoryToBeDeleted = _unitOfWork.Category.GetFirstOrDefault(com => com.Id == id);
+            if (CategoryToBeDeleted == null)
             {
-                return NotFound();
+                return Json(new { success = false, message = "Error al eliminar categoria" });
             }
 
-            Category? categoryFromDb = _unitOfWork.Category.GetFirstOrDefault(cat => cat.Id == id);
-
-            if (categoryFromDb == null)
-            {
-                return NotFound();
-            }
-
-            return View(categoryFromDb);
-        }
-
-        [HttpPost, ActionName("Delete")]
-        public IActionResult DeletePOST(int? id)
-        {
-            Category? category = _unitOfWork.Category.GetFirstOrDefault(cat => cat.Id == id);
-
-            if (category == null)
-            {
-                return NotFound();
-            }
-
-            _unitOfWork.Category.Remove(category);
+            _unitOfWork.Category.Remove(CategoryToBeDeleted);
             _unitOfWork.Save();
-            TempData["success"] = "Categoria eliminada exitosamente.";
-            return RedirectToAction("Index");
+
+            return Json(new { success = true, message = "Categoria eliminada exitosamente" });
         }
+
+        #endregion
+
     }
 }

@@ -1,0 +1,35 @@
+﻿.filter-catalog {
+    box-sizing: border-box;
+    color: grey;
+}
+
+.filter-list {
+    list-style: none;
+    padding: 5px;
+}
+
+li.custom-link-style a {
+    color: darkgray;
+    text-decoration: none;
+}
+
+li.custom-link-style a:hover {
+        text-decoration: none;
+        color: darksalmon;
+}
+
+.active-element {
+    background-color: lightblue;
+}
+
+.active-element-text {
+    background-color: lightblue;
+}
+
+
+
+@media(max-width:567px) {
+    .list-group-item {
+        padding: 3px;
+    }
+}

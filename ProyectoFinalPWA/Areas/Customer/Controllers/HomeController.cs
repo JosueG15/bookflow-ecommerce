@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProyectoFinal.DataAccess.Repository.IRepository;
 using ProyectoFinal.Models;
 using ProyectoFinal.Utility;
 using System.Diagnostics;
+using System.Net;
 using System.Security.Claims;
 
 namespace ProyectoFinalPWA.Areas.Customer.Controllers
@@ -21,7 +21,7 @@ namespace ProyectoFinalPWA.Areas.Customer.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string? category = null, string? priceRange = null, string? author = null)
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
@@ -32,7 +32,28 @@ namespace ProyectoFinalPWA.Areas.Customer.Controllers
                 _unitOfWork.ShoppingCart.GetAll(sC => sC.ApplicationUserId == claim.Value).Count());
             }
 
-            IEnumerable<Product> productList = _unitOfWork.Product.GetAll(includeProperties: "Category,ProductImages");
+            var query = _unitOfWork.Product.GetAll(includeProperties: "Category,ProductImages");
+
+            if (!string.IsNullOrEmpty(category))
+            {
+                query = query.Where(p => p.Category.Name.Equals(category));
+            }
+
+            if (!string.IsNullOrEmpty(author))
+            {
+                var decodedAuthor = WebUtility.UrlDecode(author);
+                query = query.Where(p => p.Author.Equals(decodedAuthor));
+            }
+
+            if (!string.IsNullOrEmpty(priceRange))
+            {
+                var prices = priceRange.Split('-');
+                double priceLow = double.Parse(prices[0]);
+                double priceHigh = double.Parse(prices[1]);
+                query = query.Where(p => p.Price >= priceLow && p.Price <= priceHigh);
+            }
+
+            var productList = query.ToList();
             return View(productList);
         }
 
