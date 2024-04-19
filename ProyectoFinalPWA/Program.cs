@@ -7,6 +7,7 @@ using ProyectoFinal.Utility;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Stripe;
 using ProyectoFinal.DataAccess.DbInitializer;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,6 +52,12 @@ builder.Services.AddRazorPages();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IEmailSender, EmailSender>();
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "E-Commerce API", Description = "Digitalizando lo inimaginable", Version = "v1" });
+});
+
 
 var app = builder.Build();
 
@@ -72,6 +79,11 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseSession();
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Proyecto Final PWA");
+});
 SeedDatabase();
 
 app.MapRazorPages();

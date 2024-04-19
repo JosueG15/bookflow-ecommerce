@@ -23,7 +23,13 @@ function loadDataTable(status) {
             { data: 'phoneNumber', "width": "20%" },
             { data: 'applicationUser.email', "width": "20%" },
             { data: 'orderStatus', "width": "10%" },
-            { data: 'orderTotal', "width": "10%" },
+            {
+                data: 'orderTotal',
+                "width": "10%",
+                "render": function (data, type, row) {
+                    return '$' + parseFloat(data).toFixed(2);
+                }
+            },
             {
                 data: 'id',
                 "render": function (data) {
@@ -42,6 +48,11 @@ function loadDataTable(status) {
             "lengthMenu": "Mostrando _MENU_ registros por pagina",
             "zeroRecords": "Sin registros disponibles",
             "search": "Buscar"
-        }
+        },
+        "dom": 'Bfrtip',
+        "buttons": [
+            'copy', 'csv', 'excel', 'pdf'
+        ],
+        responsive: true
     });
 }
