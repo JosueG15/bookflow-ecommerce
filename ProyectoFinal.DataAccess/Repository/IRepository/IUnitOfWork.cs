@@ -13,7 +13,7 @@ namespace ProyectoFinal.DataAccess.Repository.IRepository
         ICompanyRepository Company { get; }
         IShoppingCartRepository ShoppingCart { get; }
         IApplicationUserRepository ApplicationUser { get; }
-
+        IProductImageRepository ProductImage { get; }
         IOrderDetailRepository OrderDetail { get; }
         IOrderHeaderRepository OrderHeader { get; }
         void Save();

@@ -28,12 +28,7 @@ namespace ProyectoFinal.DataAccess.Repository
                 productFromDb.Description = product.Description;
                 productFromDb.CategoryId = product.CategoryId;
                 productFromDb.Author = product.Author;
-
-                if (product.ImageURL != null)
-                {
-                    productFromDb.ImageURL = product.ImageURL;
-                }
-
+                productFromDb.ProductImages = product.ProductImages;
             }
         }
     }

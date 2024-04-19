@@ -12,8 +12,8 @@ using ProyectoFinal.DataAccess.Data;
 namespace ProyectoFinal.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240418032829_FixPaymentIntentTypo")]
-    partial class FixPaymentIntentTypo
+    [Migration("20240418233129_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

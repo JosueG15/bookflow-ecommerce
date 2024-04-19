@@ -4,18 +4,18 @@ using ProyectoFinal.Models;
 
 namespace ProyectoFinal.DataAccess.Repository
 {
-    public class CategoryRepository : Repository<Category>, ICategoryRepository
+    public class ProductImageRepository : Repository<ProductImage>, IProductImageRepository
     {
         private readonly ApplicationDbContext _db;
 
-        public CategoryRepository(ApplicationDbContext db) : base(db)
+        public ProductImageRepository(ApplicationDbContext db) : base(db)
         {
             _db = db;
         }
 
-        public void Update(Category category)
+        public void Update(ProductImage productImage)
         {
-            _db.Categories.Update(category);
+            _db.ProductImages.Update(productImage);
         }
     }
 }

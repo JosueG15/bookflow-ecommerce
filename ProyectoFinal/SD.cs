@@ -8,10 +8,10 @@ namespace ProyectoFinal.Utility
 {
     public static class SD
     {
-        public const string Role_Customer = "Customer";
-        public const string Role_Company = "Company";
+        public const string Role_Customer = "Cliente";
+        public const string Role_Company = "Empresa";
         public const string Role_User_Admin = "Admin";
-        public const string Role_User_Employee = "Employee";
+        public const string Role_User_Employee = "Empleado";
 
         public const string StatusPending = "Pendiente";
 		public const string StatusApproved = "Aprobado";

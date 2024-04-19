@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using ProyectoFinal.DataAccess.Repository.IRepository;
 using ProyectoFinal.Models;
@@ -14,13 +15,15 @@ namespace ProyectoFinalPWA.Areas.Customer.Controllers
     public class CartController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IEmailSender _emailSender;
         
         [BindProperty]
         public ShoppingCartVM ShoppingCartVM { get; set; }
 
-        public CartController(IUnitOfWork unitOfWork)
+        public CartController(IUnitOfWork unitOfWork, IEmailSender emailSender)
         {
             _unitOfWork = unitOfWork;
+            _emailSender = emailSender;
         }
         public IActionResult Index()
         {
@@ -32,8 +35,11 @@ namespace ProyectoFinalPWA.Areas.Customer.Controllers
             OrderHeader = new()
             };
 
+            IEnumerable<ProductImage> productImages = _unitOfWork.ProductImage.GetAll();
+
             foreach(var cart in ShoppingCartVM.ShoppingCartList)
             {
+                cart.Product.ProductImages = productImages.Where(u => u.ProductId == cart.Product.Id).ToList();
                 cart.Price = GetPriceBasedOnQuantity(cart);
                 ShoppingCartVM.OrderHeader.OrderTotal += cart.Price * cart.Count;
             }
@@ -181,6 +187,8 @@ namespace ProyectoFinalPWA.Areas.Customer.Controllers
                 }
                 HttpContext.Session.Clear();
             }
+
+            _emailSender.SendEmailAsync(orderHeader.ApplicationUser.Email, "<p>Nueva Orden - Proyecto Final PWA", $"<p>Tienes una nueva orden con ID: {orderHeader.Id}</p>");
 
             List<ShoppingCart> shoppingCarts = _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == orderHeader.ApplicationUserId).ToList();
 

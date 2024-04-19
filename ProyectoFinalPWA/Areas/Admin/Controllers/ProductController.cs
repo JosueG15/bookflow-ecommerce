@@ -47,50 +47,62 @@ namespace ProyectoFinalPWA.Areas.Admin.Controllers
 
             } else
             {
-                productVM.Product = _unitOfWork.Product.GetFirstOrDefault(pro => pro.Id == id);
+                productVM.Product = _unitOfWork.Product.GetFirstOrDefault(pro => pro.Id == id, includeProperties: "ProductImages");
                 return View(productVM);
             }
         }
 
         [HttpPost]
-        public IActionResult Upsert(ProductVM productVM, IFormFile? file)
+        public IActionResult Upsert(ProductVM productVM, List<IFormFile>? files)
         {
             if (ModelState.IsValid)
             {
-                string wwwRootPath = _webHostEnvironment.WebRootPath;
-                if (file != null)
-                {
-                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                    string productPath = Path.Combine(wwwRootPath, @"images\product");
-
-                    if(!string.IsNullOrEmpty(productVM.Product.ImageURL))
-                    {
-                        var oldImagePath = Path.Combine(wwwRootPath,productVM.Product.ImageURL.TrimStart('\\'));
-
-                        if (System.IO.File.Exists(oldImagePath))
-                        {
-                            System.IO.File.Delete(oldImagePath);
-                        }
-                    }
-
-                    using (var fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create))
-                    {
-                        file.CopyTo(fileStream);
-                    }
-
-                    productVM.Product.ImageURL = @"\images\product\" + fileName;
-                }
-
-
                 if (productVM.Product.Id == 0)
                 {
                     _unitOfWork.Product.Add(productVM.Product);
-                } else
+                }
+                else
                 {
                     _unitOfWork.Product.Update(productVM.Product);
                 }
+
                 _unitOfWork.Save();
-                TempData["success"] = "Producto creado exitosamente.";
+
+                string wwwRootPath = _webHostEnvironment.WebRootPath;
+                if (files != null)
+                {
+
+                    foreach (IFormFile file in files)
+                    {
+                        string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                        string productPath = @"images\products\product-" + productVM.Product.Id;
+                        string finalPath = Path.Combine(wwwRootPath, productPath);
+
+                        if (!Directory.Exists(finalPath))
+                            Directory.CreateDirectory(finalPath);
+
+                        using (var fileStream = new FileStream(Path.Combine(finalPath, fileName), FileMode.Create))
+                        {
+                            file.CopyTo(fileStream);
+                        }
+
+                        ProductImage productImage = new()
+                        {
+                            ImageURL = @"\" + productPath + @"\" + fileName,
+                            ProductId = productVM.Product.Id,
+                        };
+
+                        if (productVM.Product.ProductImages == null)
+                            productVM.Product.ProductImages = new List<ProductImage>();
+
+                        productVM.Product.ProductImages.Add(productImage);
+                    }
+
+                    _unitOfWork.Product.Update(productVM.Product);
+                    _unitOfWork.Save();
+                }
+
+                TempData["success"] = "Operacion realizada exitosamente.";
                 return RedirectToAction("Index");
             } else
             {
@@ -101,6 +113,33 @@ namespace ProyectoFinalPWA.Areas.Admin.Controllers
                 });
                 return View(productVM);
             }
+        }
+
+        public IActionResult DeleteImage(int imageId)
+        {
+            var imageToBeDeleted = _unitOfWork.ProductImage.GetFirstOrDefault(u => u.Id == imageId);
+            int productId = imageToBeDeleted.ProductId;
+            
+            if (imageToBeDeleted != null)
+            {
+                if (!string.IsNullOrEmpty(imageToBeDeleted.ImageURL))
+                {
+                    var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, 
+                        imageToBeDeleted.ImageURL.TrimStart('\\'));
+
+                    if (System.IO.File.Exists(oldImagePath))
+                    {
+                        System.IO.File.Delete(oldImagePath);
+                    }
+                }
+
+                _unitOfWork.ProductImage.Remove(imageToBeDeleted);
+                _unitOfWork.Save();
+
+                TempData["success"] = "Imagen eliminada exitosamente";
+            }
+
+            return RedirectToAction(nameof(Upsert), new { id = productId });
         }
 
         #region API CALLS
@@ -121,14 +160,21 @@ namespace ProyectoFinalPWA.Areas.Admin.Controllers
                 return Json(new { success = false, message = "Error al eliminar producto" });
             }
 
-            string wwwRootPath = _webHostEnvironment.WebRootPath;
+            string productPath = @"images\products\product-" + id;
+            string finalPath = Path.Combine(_webHostEnvironment.WebRootPath, productPath);
 
-            var oldImagePath = Path.Combine(wwwRootPath, productToBeDeleted.ImageURL.TrimStart('\\'));
-
-            if (System.IO.File.Exists(oldImagePath))
+            if (Directory.Exists(finalPath))
             {
-                System.IO.File.Delete(oldImagePath);
+                string[] filePaths = Directory.GetFiles(finalPath);
+                foreach (string filePath in filePaths)
+                {
+                    System.IO.File.Delete(filePath);
+                }
+
+                Directory.Delete(finalPath);
             }
+               
+
 
             _unitOfWork.Product.Remove(productToBeDeleted);
             _unitOfWork.Save();

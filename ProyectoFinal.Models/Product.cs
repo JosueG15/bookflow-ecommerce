@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
@@ -48,14 +43,16 @@ namespace ProyectoFinal.Models
         [Range(1, 1000, ErrorMessage = "El precio debe ser en el rango de $1.00 y $1000.00")]
         public double Price100 { get; set; }
 
+        [DisplayName("Categoria")]
         public int CategoryId { get; set; }
 
         [ForeignKey("CategoryId")]
+        [DisplayName("Categoria")]
         [ValidateNever]
         public Category Category { get; set; }
 
-        [DisplayName("Imagen URL")]
         [ValidateNever]
-        public string ImageURL { get; set; }
+        [DisplayName("Imagenes de libro")]
+        public List<ProductImage> ProductImages { get; set; }
     }
 }

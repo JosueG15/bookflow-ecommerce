@@ -18,7 +18,7 @@ namespace ProyectoFinal.Utility
         {
             var client = new SendGridClient(SendGridSecret);
 
-            var from = new EmailAddress("josue14guardado@gmail.com", "Proyecto Final");
+            var from = new EmailAddress("admin@proyectofinal.net", "Proyecto Final");
             var to = new EmailAddress(email);
             var message = MailHelper.CreateSingleEmail(from, to, subject, "", htmlMessage);
 
