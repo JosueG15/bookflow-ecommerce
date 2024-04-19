@@ -92,7 +92,13 @@ namespace ProyectoFinalPWA.Areas.Admin.Controllers
             var userRoles = _db.UserRoles.ToList();
             var roles = _db.Roles.ToList();
 
-           foreach(var user in objUserList)
+            objUserList = objUserList.Where(user => {
+                var roleId = userRoles.FirstOrDefault(u => u.UserId == user.Id)?.RoleId;
+                var roleName = roles.FirstOrDefault(r => r.Id == roleId)?.Name;
+                return roleName != SD.Role_User_Admin;
+            }).ToList();
+
+            foreach (var user in objUserList)
             {
                 if (user.Company == null)
                 {

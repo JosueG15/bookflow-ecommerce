@@ -1,9 +1,83 @@
-﻿@model int
+﻿@model OrderHeader
 
-<div class="container row pt-4">
+<h1 class="text-center mb-3">Hemos recibido tu pedido!</h1>
+<section class="vh-100" style="background-color: lightgrey; border-radius: 1%;">
+    <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-12">
+                <div class="card card-stepper text-black" style="border-radius: 16px;">
+
+                    <div class="card-body p-5">
+
+                        <div class="d-flex justify-content-between align-items-center mb-5">
+                            <div>
+                                <h5 class="mb-0">Orden No. <span class="text-primary font-weight-bold">#@Model.Id</span></h5>
+                            </div>
+                            <div class="text-end">
+                                <p class="mb-0">Fecha Estimada <span>@Model.OrderDate.AddDays(14).ToShortDateString()</span></p>
+                                <p class="mb-0">
+                                    Encomendista <span class="font-weight-bold">
+                                        &lt;Pendiente de asignacion&gt;
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <ul id="progressbar-2" class="d-flex justify-content-between mx-0 mt-0 mb-5 px-0 pt-0 pb-2">
+                            <li class="step0 active text-center" id="step1"></li>
+                            <li class="step0 text-center" id="step2"></li>
+                            <li class="step0 text-center" id="step3"></li>
+                            <li class="step0 text-muted text-end" id="step4"></li>
+                        </ul>
+
+                        <div class="d-flex justify-content-between">
+                            <div class="d-lg-flex align-items-center">
+                                <i class="bi bi-clipboard me-lg-4 mb-3 mb-lg-0" style="font-size: 3em;"></i>
+                                <div>
+                                    <p class="fw-bold mb-1">Orden</p>
+                                    <p class="fw-bold mb-0">Procesada</p>
+                                </div>
+                            </div>
+                            <div class="d-lg-flex align-items-center">
+                                <i class="bi bi-box2 me-lg-4 mb-3 mb-lg-0" style="font-size: 3em;"></i>
+                                <div>
+                                    <p class="fw-bold mb-1">Orden</p>
+                                    <p class="fw-bold mb-0">Enviada</p>
+                                </div>
+                            </div>
+                            <div class="d-lg-flex align-items-center">
+                                <i class="bi bi-truck me-lg-4 mb-3 mb-lg-0" style="font-size: 3em;"></i>
+                                <div>
+                                    <p class="fw-bold mb-1">Orden</p>
+                                    <p class="fw-bold mb-0">En Ruta</p>
+                                </div>
+                            </div>
+                            <div class="d-lg-flex align-items-center">
+                                <i class="bi bi-house-down-fill me-lg-4 mb-3 mb-lg-0" style="font-size: 3em;"></i>
+                                <div>
+                                    <p class="fw-bold mb-1">Orden</p>
+                                    <p class="fw-bold mb-0">Entregada</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/orderConfirmation.css">
+}
+
+@* <div class="container row pt-4">
     <div class="col-12 text-center">
         <h1 class="text-primary text-center">Orden enviada exitosamente!</h1>
-        Numero de orden: @Model <br /><br />
+        Numero de orden: @Model.Id <br /><br />
 
         <img src="~/images/lawn_leaf.jpg"  width="65%"/>
     </div>
@@ -11,5 +85,6 @@
     <div class="col-12 text-center" style="color:maroon;">
         <br />
         Tu orden ha sido creada exitosamente. 
+        /customer/cart/OrderConfirmation?id=2
     </div>
-</div>
+</div> *@

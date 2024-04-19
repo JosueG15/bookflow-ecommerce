@@ -195,7 +195,7 @@ namespace ProyectoFinalPWA.Areas.Customer.Controllers
             _unitOfWork.ShoppingCart.RemoveRange(shoppingCarts);
             _unitOfWork.Save();
 
-            return View(id);
+            return View(orderHeader);
         }
 
 		public IActionResult Plus(int cartId)

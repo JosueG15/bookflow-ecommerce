@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <_ContentIncludedByDefault Remove="wwwroot\css\orderConfirmation.css" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Azure.Identity" Version="1.11.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="8.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="8.0.4" />
