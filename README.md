@@ -1,6 +1,6 @@
-# Final-Project-PWA
+# Bookflow-Ecommerce
 
-Final-Project-PWA is a web application developed using ASP.NET Core MVC with .NET 8 and Razor Pages for the "Active Web Page Design" course. This project consists of a mini e-commerce platform for book sales, with the ability to add book categories and relate them to inventory. It also includes features such as discounts, payment processing with Stripe, and authentication using Facebook, Microsoft, and personal email accounts.
+Bookflow-Ecommerce is a web application developed using ASP.NET Core MVC with .NET 8 and Razor Pages for the "Active Web Page Design" course. This project consists of a mini e-commerce platform for book sales, with the ability to add book categories and relate them to inventory. It also includes features such as discounts, payment processing with Stripe, and authentication using Facebook, Microsoft, and personal email accounts.
 
 ## Features
 
@@ -26,8 +26,8 @@ Final-Project-PWA is a web application developed using ASP.NET Core MVC with .NE
 
 To run the project locally, follow these steps:
 
-1. Clone the repository: `git clone https://github.com/JosueG15/Final-Project-PWA.git`
-2. Navigate to the project directory: `cd Final-Project-PWA`
+1. Clone the repository: `git clone https://github.com/JosueG15/Bookflow-Ecommerce.git`
+2. Navigate to the project directory: `cd Bookflow-Ecommerce`
 3. Restore NuGet packages: `dotnet restore`
 4. Configure the application settings (e.g., database connection strings, Stripe keys, authentication settings).
 5. Apply database migrations: `dotnet ef database update`
